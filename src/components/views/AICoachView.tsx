@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { Lock, Sparkles, TrendingUp, AlertCircle, Calendar, Crown, Check, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';

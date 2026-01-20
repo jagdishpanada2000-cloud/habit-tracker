@@ -1,12 +1,11 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { Lock, Sparkles, TrendingUp, AlertCircle, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { aiService, AIInsight } from '@/services/ai';
 import { profileService, Profile } from '@/services/profile';
-import { useNavigate } from 'react-router-dom';
-
 export const AIInsightsCard = () => {
-  const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [latestInsights, setLatestInsights] = useState<AIInsight[]>([]);
   const [loading, setLoading] = useState(true);

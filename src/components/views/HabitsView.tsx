@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { MoreVertical, Flame, Calendar, Edit2, Trash2, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';

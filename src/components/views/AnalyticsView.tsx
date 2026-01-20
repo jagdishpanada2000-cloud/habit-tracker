@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { TrendingUp, Target, Flame, Award, Calendar, BarChart2, Activity, Layers } from 'lucide-react';
 import { CircularProgress } from '@/components/stats/CircularProgress';

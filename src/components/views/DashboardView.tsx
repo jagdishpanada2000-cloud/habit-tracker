@@ -1,3 +1,5 @@
+'use client';
+
 import { HabitGrid } from '@/components/habits/HabitGrid';
 import { StatsSection } from '@/components/stats/StatsSection';
 import { AIInsightsCard } from '@/components/ai/AIInsightsCard';

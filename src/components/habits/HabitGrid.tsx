@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
 import { Check, MoreVertical, Trash2, Edit2, X, Check as CheckIcon, Info, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';

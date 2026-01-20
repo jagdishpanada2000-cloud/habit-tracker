@@ -1,8 +1,23 @@
+'use client';
+
 import { User, Bell, Moon, Shield, HelpCircle, LogOut, ChevronRight, Crown } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 
-const settingsSections = [
+interface SettingsItem {
+  icon: any;
+  label: string;
+  sublabel?: string;
+  action: 'chevron' | 'toggle';
+  enabled?: boolean;
+}
+
+interface SettingsSection {
+  title: string;
+  items: SettingsItem[];
+}
+
+const settingsSections: SettingsSection[] = [
   {
     title: 'Account',
     items: [

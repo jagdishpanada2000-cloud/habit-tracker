@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Flame, Target } from 'lucide-react';
 import { CircularProgress } from './CircularProgress';
