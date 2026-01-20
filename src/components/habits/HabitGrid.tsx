@@ -90,6 +90,21 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
     loadData();
   }, [currentMonth]);
 
+  // Handle scroll to today once loading is complete
+  useEffect(() => {
+    if (!loading && isCurrentMonth && scrollRef.current) {
+      const scrollContainer = scrollRef.current;
+      const todayElement = scrollContainer.querySelector(`[data-day="${currentDay}"]`);
+      if (todayElement) {
+        const containerWidth = scrollContainer.offsetWidth;
+        const elementOffset = (todayElement as HTMLElement).offsetLeft;
+        const elementWidth = (todayElement as HTMLElement).offsetWidth;
+
+        scrollContainer.scrollLeft = elementOffset - (containerWidth / 2) + (elementWidth / 2);
+      }
+    }
+  }, [loading, isCurrentMonth, currentDay]);
+
   const toggleDay = async (habitId: string, day: number) => {
     // Optimistic Update
     setHabits(prev => prev.map(habit => {
@@ -186,7 +201,11 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                     <span className="text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">#</span>
                   </th>
                   {days.map(day => (
-                    <th key={day} className="px-1 py-5 min-w-[48px] sm:min-w-[40px] border-b border-white/5 text-center transition-all bg-white/[0.01]">
+                    <th
+                      key={day}
+                      data-day={day}
+                      className="px-1 py-5 min-w-[48px] sm:min-w-[40px] border-b border-white/5 text-center transition-all bg-white/[0.01]"
+                    >
                       <span className={cn(
                         'text-xs font-bold transition-all duration-300 block',
                         day === currentDay ? 'text-primary scale-125' : 'text-muted-foreground/30'
@@ -285,7 +304,9 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
 
                         const realToday = new Date();
                         realToday.setHours(0, 0, 0, 0);
+
                         const isFuture = cellDate > realToday;
+                        const isPast = cellDate < realToday;
 
                         let isBeforeCreation = false;
                         if (userCreatedAt) {
@@ -294,7 +315,9 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                           isBeforeCreation = cellDate < creationStart;
                         }
 
-                        const isDisabled = isFuture || isBeforeCreation;
+                        // Users can only EDIT the running day (today)
+                        const isEditable = isToday;
+                        const isDisabled = !isEditable;
 
                         return (
                           <td key={day} className={cn(
@@ -306,10 +329,11 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                                 onClick={() => !isDisabled && toggleDay(habit.id, day)}
                                 disabled={isDisabled}
                                 className={cn(
-                                  'habit-check w-8 h-8 sm:w-7 sm:h-7 rounded-xl flex items-center justify-center transition-all active:scale-75',
+                                  'habit-check w-8 h-8 sm:w-7 sm:h-7 rounded-xl flex items-center justify-center transition-all',
+                                  isEditable && 'active:scale-75',
                                   isCompleted ? 'animate-check-pop border-transparent scale-110' : 'bg-white/[0.03] border border-white/5 hover:border-primary/40',
                                   isToday && !isCompleted && 'border-primary ring-4 ring-primary/10 shadow-[0_0_10px_hsl(var(--primary)/0.2)]',
-                                  isDisabled && 'opacity-20 cursor-not-allowed grayscale'
+                                  isDisabled && 'cursor-default'
                                 )}
                                 style={isCompleted ? {
                                   backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))',

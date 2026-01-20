@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, Target, Flame, Award, Calendar, BarChart2, Activity, Layers } from 'lucide-react';
 import { CircularProgress } from '@/components/stats/CircularProgress';
+import { cn } from '@/lib/utils';
 import { habitService, Habit } from '@/services/habits';
 import { logService } from '@/services/logs';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line, Legend } from 'recharts';
@@ -139,22 +140,47 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
         }
         setMonthlyData(last4Months);
 
-        // Weekly Overview
+        // Weekly Overview (Calendar Weeks: Mon - Sun)
         const last4Weeks = [];
+        const dayOfWeek = today.getDay(); // 0(Sun) to 6(Sat)
+        const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
         for (let i = 3; i >= 0; i--) {
-          const weekEnd = new Date(today);
-          weekEnd.setDate(today.getDate() - (i * 7));
-          const weekStart = new Date(weekEnd);
-          weekStart.setDate(weekEnd.getDate() - 6);
+          const mondayOfTargetWeek = new Date(today);
+          mondayOfTargetWeek.setDate(today.getDate() - daysSinceMonday - (i * 7));
+          mondayOfTargetWeek.setHours(0, 0, 0, 0);
+
+          const sundayOfTargetWeek = new Date(mondayOfTargetWeek);
+          sundayOfTargetWeek.setDate(mondayOfTargetWeek.getDate() + 6);
+          sundayOfTargetWeek.setHours(23, 59, 59, 999);
 
           const wLogs = logs.filter(l => {
             const ld = new Date(l.completed_date);
-            return ld >= weekStart && ld <= weekEnd;
+            return ld >= mondayOfTargetWeek && ld <= sundayOfTargetWeek;
           });
 
-          const possible = totalHabits * 7;
-          const value = possible > 0 ? Math.round((wLogs.length / possible) * 100) : 0;
-          last4Weeks.push({ week: i === 0 ? 'Now' : `${i}w`, value });
+          let totalPossible = 0;
+          habitsData.forEach(h => {
+            const schedule = h.days_of_week || [0, 1, 2, 3, 4, 5, 6];
+            // If it's a past week, count all scheduled days in that week
+            // If it's the current week, only count scheduled days up to today
+            const endDayInWeek = i === 0 ? daysSinceMonday : 6;
+
+            for (let d = 0; d <= endDayInWeek; d++) {
+              const checkDate = new Date(mondayOfTargetWeek);
+              checkDate.setDate(mondayOfTargetWeek.getDate() + d);
+              if (schedule.includes(checkDate.getDay())) {
+                totalPossible++;
+              }
+            }
+          });
+
+          const value = totalPossible > 0 ? Math.round((wLogs.length / totalPossible) * 100) : 0;
+          last4Weeks.push({
+            week: i === 0 ? 'Now' : `W-${i}`,
+            value,
+            isCurrent: i === 0
+          });
         }
         setWeeklyOverview(last4Weeks.reverse());
 
@@ -253,16 +279,30 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
         <div className="glass-card p-6 flex flex-col gap-6">
           <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Weekly Consistency</h3>
           <div className="flex items-center justify-around gap-2 py-2">
-            {weeklyOverview.map((item, idx) => {
-              const isLast = idx === weeklyOverview.length - 1;
+            {weeklyOverview.map((item: any, idx) => {
+              const isCurrent = item.isCurrent;
               return (
                 <div key={idx} className="flex flex-col items-center gap-3">
-                  <CircularProgress
-                    percentage={item.value}
-                    size={isLast ? 64 : 52}
-                    strokeWidth={isLast ? 6 : 4}
-                  />
-                  <span className={`text-[10px] font-medium ${isLast ? 'text-primary' : 'text-muted-foreground/40'}`}>{item.week}</span>
+                  <div className={cn(
+                    "relative transition-transform duration-500",
+                    isCurrent && "scale-110"
+                  )}>
+                    <CircularProgress
+                      percentage={item.value}
+                      size={isCurrent ? 72 : 52}
+                      strokeWidth={isCurrent ? 8 : 4}
+                      className={isCurrent ? "drop-shadow-[0_0_10px_rgba(var(--primary),0.3)]" : ""}
+                    />
+                    {isCurrent && (
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-background animate-pulse" />
+                    )}
+                  </div>
+                  <span className={cn(
+                    "text-[10px] font-bold tracking-tight transition-colors",
+                    isCurrent ? "text-primary uppercase" : "text-muted-foreground/30"
+                  )}>
+                    {item.week}
+                  </span>
                 </div>
               );
             })}
