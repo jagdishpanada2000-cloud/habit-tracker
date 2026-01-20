@@ -67,28 +67,24 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
 
         // --- 1. Monthly Progress & Trend ---
         const getMonthRate = (start: Date, end: Date, relevantLogs: HabitLog[]) => {
-          // Filter logs within range
-          const rangeLogs = relevantLogs.filter(l => {
-            // Use simple string comparison for date range to be safe with times
-            const dStr = l.completed_date;
-            const startStr = toLocal(start);
-            const endStr = toLocal(end);
-            return dStr >= startStr && dStr <= endStr;
+          const daysPassed = end.getDate();
+          let totalPossible = 0;
+          let totalActual = 0;
+
+          habits.forEach(h => {
+            for (let d = 1; d <= daysPassed; d++) {
+              const checkDate = new Date(start.getFullYear(), start.getMonth(), d);
+              if (h.days_of_week.includes(checkDate.getDay())) {
+                totalPossible++;
+
+                const dStr = toLocal(checkDate);
+                const isLogged = relevantLogs.some(l => l.habit_id === h.id && l.completed_date === dStr);
+                if (isLogged) totalActual++;
+              }
+            }
           });
 
-          // Days in range for calculation
-          // For 'current' view month: days so far (up to viewDate)
-          // For 'prev' month: total days in that month
-
-          // Calculate days diff + 1
-          // Correction: if end includes time, reset to midnight for diff?
-          // Let's use robust day count:
-          // viewDate is set to NOW or EndOfMonth(23:59:59?).
-          // Let's simplify: 
-          const daysPassed = end.getDate(); // valid if start is 1st
-
-          const possible = totalHabits * daysPassed;
-          return possible > 0 ? Math.round((rangeLogs.length / possible) * 100) : 0;
+          return totalPossible > 0 ? Math.round((totalActual / totalPossible) * 100) : 0;
         };
 
         const currentRate = getMonthRate(viewMonthStart, viewDate, logs);
@@ -101,25 +97,29 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
         });
 
         // --- 2. Weekly Consistency ---
-        // Show last 7 days ending at viewDate
         const weekDataPoints = [];
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-        // Start 6 days before viewDate
         for (let i = 6; i >= 0; i--) {
           const d = new Date(viewDate);
           d.setDate(viewDate.getDate() - i);
-
-          // Construct YYYY-MM-DD locally to match DB format
-          const year = d.getFullYear();
-          const month = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          const dStr = `${year}-${month}-${day}`;
-
+          const dStr = toLocal(d);
           const dName = dayNames[d.getDay()];
+          const dayOfWeek = d.getDay();
 
-          const dayLogs = logs.filter(l => l.completed_date === dStr);
-          const val = totalHabits > 0 ? Math.round((dayLogs.length / totalHabits) * 100) : 0;
+          let dayPossible = 0;
+          let dayLogged = 0;
+
+          habits.forEach(h => {
+            if (h.days_of_week.includes(dayOfWeek)) {
+              dayPossible++;
+              if (logs.some(l => l.habit_id === h.id && l.completed_date === dStr)) {
+                dayLogged++;
+              }
+            }
+          });
+
+          const val = dayPossible > 0 ? Math.round((dayLogged / dayPossible) * 100) : 0;
           weekDataPoints.push({ day: dName, value: val });
         }
         setWeeklyData(weekDataPoints);

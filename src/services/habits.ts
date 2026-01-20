@@ -9,6 +9,7 @@ export interface Habit {
     icon: string | null;
     color: string;
     frequency: 'daily' | 'weekly';
+    days_of_week: number[];
     target_days: number;
     archived: boolean;
     created_at: string;
@@ -20,6 +21,7 @@ export interface CreateHabitDTO {
     icon?: string;
     color?: string;
     frequency?: 'daily' | 'weekly';
+    days_of_week?: number[];
     target_days?: number;
 }
 

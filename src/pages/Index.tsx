@@ -65,7 +65,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <AuthOverlay />
       <TopBar
         currentMonth={currentMonth}
@@ -78,7 +78,7 @@ const Index = () => {
       <div className="flex">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <main className="flex-1 px-3 py-4 lg:p-6 pb-24 lg:pb-6 max-w-7xl">
+        <main className="flex-1 px-3 py-4 lg:p-6 pb-24 lg:pb-6 max-w-7xl w-full overflow-x-hidden">
           {renderView()}
         </main>
       </div>
