@@ -28,12 +28,78 @@ export const HabitsView = () => {
   const [loading, setLoading] = useState(true);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [habitStreaks, setHabitStreaks] = useState<{ [key: string]: number }>({});
 
   const loadHabits = async () => {
     try {
       setLoading(true);
       const data = await habitService.getHabits();
       setHabits(data);
+
+      // Now calculate streaks
+      // We need logs for a decent range
+      const today = new Date();
+      const sixtyDaysAgo = new Date();
+      sixtyDaysAgo.setDate(today.getDate() - 60);
+
+      const logs = await logService.getLogs(sixtyDaysAgo, today);
+      const streaks: { [key: string]: number } = {};
+
+      const toLocalISO = (d: Date) => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      data.forEach(habit => {
+        let streak = 0;
+        let checkDate = new Date(today);
+        checkDate.setHours(0, 0, 0, 0);
+
+        const habitLogs = logs.filter(l => l.habit_id === habit.id).map(l => l.completed_date);
+        const schedule = habit.days_of_week || [0, 1, 2, 3, 4, 5, 6];
+
+        // Start checking from "today" or the most recent scheduled day
+        // If today is NOT in schedule, start from the most recent scheduled day before today
+        while (!schedule.includes(checkDate.getDay())) {
+          checkDate.setDate(checkDate.getDate() - 1);
+        }
+
+        // Now check backwards
+        while (true) {
+          const dateStr = toLocalISO(checkDate);
+          if (habitLogs.includes(dateStr)) {
+            streak++;
+            // Move to previous scheduled day
+            do {
+              checkDate.setDate(checkDate.getDate() - 1);
+            } while (!schedule.includes(checkDate.getDay()));
+          } else {
+            // If it's today and not completed yet, that's okay, streak might still be alive from yesterday
+            const isToday = toLocalISO(new Date()) === dateStr;
+            if (isToday) {
+              // Move to previous scheduled day and continue checking
+              do {
+                checkDate.setDate(checkDate.getDate() - 1);
+              } while (!schedule.includes(checkDate.getDay()));
+
+              const prevDateStr = toLocalISO(checkDate);
+              if (habitLogs.includes(prevDateStr)) {
+                // Streak is alive but hasn't increased today yet
+                continue;
+              } else {
+                break;
+              }
+            } else {
+              break;
+            }
+          }
+        }
+        streaks[habit.id] = streak;
+      });
+
+      setHabitStreaks(streaks);
     } catch (error) {
       toast.error('Failed to load habits');
     } finally {
@@ -125,7 +191,7 @@ export const HabitsView = () => {
                       </div>
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-warning/70">
                         <Flame className="w-3.5 h-3.5" />
-                        <span>-- Day Streak</span>
+                        <span>{habitStreaks[habit.id] || 0} Day Streak</span>
                       </div>
                     </div>
                   </div>

@@ -128,55 +128,66 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
         // Metric: Streak ending at viewDate & 30-day percentage ending at viewDate
         const habitsStats = habits.map(h => {
           const hLogs = logs.filter(l => l.habit_id === h.id);
-          const hDates = hLogs.map(l => l.completed_date).sort();
+          const hDates = hLogs.map(l => l.completed_date);
+          const schedule = h.days_of_week || [0, 1, 2, 3, 4, 5, 6];
 
           // Calculate Streak ending at viewDate
           let streak = 0;
           let checkDate = new Date(viewDate);
+          checkDate.setHours(0, 0, 0, 0);
 
-          // Helper for local YYYY-MM-DD
-          const toLocal = (d: Date) => {
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-          };
-
-          const viewDateStr = toLocal(checkDate);
-          if (hDates.includes(viewDateStr)) streak = 1;
-
-          // Iterate back
-          while (true) {
+          // Find the most recent scheduled day starting from today
+          while (!schedule.includes(checkDate.getDay())) {
             checkDate.setDate(checkDate.getDate() - 1);
+          }
+
+          while (true) {
             const str = toLocal(checkDate);
             if (hDates.includes(str)) {
               streak++;
-            } else if (streak === 0 && str === viewDateStr) {
-              // Same logic as before
-              streak++;
+              // Move to previous scheduled day
+              do {
+                checkDate.setDate(checkDate.getDate() - 1);
+              } while (!schedule.includes(checkDate.getDay()));
             } else {
-              break;
+              // Streak might still be alive if checkDate is Today and it's not logged yet
+              const todayStr = toLocal(realToday);
+              if (str === todayStr) {
+                // Check if it was logged on the previous scheduled day
+                do {
+                  checkDate.setDate(checkDate.getDate() - 1);
+                } while (!schedule.includes(checkDate.getDay()));
+
+                const prevStr = toLocal(checkDate);
+                if (hDates.includes(prevStr)) {
+                  // Streak is still active from previous scheduled day
+                  continue;
+                } else {
+                  break;
+                }
+              } else {
+                break;
+              }
             }
           }
 
-          // Percentage for viewed month (or last 30 days relative to viewDate?)
-          // "Top Performing Habits" usually implies recent performance. 
-          // Let's show performance *within the selected month*?
-          // Or last 30 days from viewDate. Last 30 days is more robust for stats.
+          // Percentage for last 30 days
           const thirtyDaysAgo = new Date(viewDate);
           thirtyDaysAgo.setDate(viewDate.getDate() - 30);
 
-          // We need to fetch more logs if we want 30 days back from viewDate?
-          // Currently fetching (prevMonthStart -> viewDate), which is ~60 days. So we are good.
+          let possibleRecent = 0;
+          let actualRecent = 0;
+          for (let i = 0; i < 30; i++) {
+            const d = new Date(viewDate);
+            d.setDate(viewDate.getDate() - i);
+            if (schedule.includes(d.getDay())) {
+              possibleRecent++;
+              const dStr = toLocal(d);
+              if (hDates.includes(dStr)) actualRecent++;
+            }
+          }
 
-          const recentLogs = hLogs.filter(l => {
-            const dStr = l.completed_date;
-            const minStr = thirtyDaysAgo.toISOString().split('T')[0];
-            const maxStr = viewDate.toISOString().split('T')[0];
-            return dStr >= minStr && dStr <= maxStr;
-          });
-
-          const pct = Math.round((recentLogs.length / 30) * 100);
+          const pct = possibleRecent > 0 ? Math.round((actualRecent / possibleRecent) * 100) : 0;
 
           return {
             id: h.id,

@@ -49,9 +49,14 @@ export const CircularProgress = ({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="stat-number">{percentage}%</span>
-        {label && <span className="text-xs text-muted-foreground mt-1">{label}</span>}
-        {sublabel && <span className="text-[10px] text-muted-foreground/70">{sublabel}</span>}
+        <span
+          className="font-semibold tracking-tight text-foreground leading-none"
+          style={{ fontSize: size * 0.22 }}
+        >
+          {percentage}%
+        </span>
+        {label && <span className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">{label}</span>}
+        {sublabel && <span className="text-[9px] text-muted-foreground/60">{sublabel}</span>}
       </div>
     </div>
   );
