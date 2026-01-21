@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MoreVertical, Flame, Calendar, Edit2, Trash2, Info } from 'lucide-react';
+import { MoreVertical, Flame, Calendar, Edit2, Trash2, Info, X, Award, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { habitService, Habit } from '@/services/habits';
+import { logService } from '@/services/logs';
 import { CreateHabitDialog } from '@/components/habits/CreateHabitDialog';
 import { EditHabitDialog } from '@/components/habits/EditHabitDialog';
 import { toast } from 'sonner';
@@ -30,79 +31,29 @@ export const HabitsView = () => {
   const [loading, setLoading] = useState(true);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [habitStreaks, setHabitStreaks] = useState<{ [key: string]: number }>({});
 
   const loadHabits = async () => {
     try {
       setLoading(true);
       const data = await habitService.getHabits();
-      setHabits(data);
 
-      // Now calculate streaks
-      // We need logs for a decent range
-      const today = new Date();
-      const sixtyDaysAgo = new Date();
-      sixtyDaysAgo.setDate(today.getDate() - 60);
+      // Refresh stats for habits that haven't been updated today
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-      const logs = await logService.getLogs(sixtyDaysAgo, today);
-      const streaks: { [key: string]: number } = {};
-
-      const toLocalISO = (d: Date) => {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-
-      data.forEach(habit => {
-        let streak = 0;
-        let checkDate = new Date(today);
-        checkDate.setHours(0, 0, 0, 0);
-
-        const habitLogs = logs.filter(l => l.habit_id === habit.id).map(l => l.completed_date);
-        const schedule = habit.days_of_week || [0, 1, 2, 3, 4, 5, 6];
-
-        // Start checking from "today" or the most recent scheduled day
-        // If today is NOT in schedule, start from the most recent scheduled day before today
-        while (!schedule.includes(checkDate.getDay())) {
-          checkDate.setDate(checkDate.getDate() - 1);
+      await Promise.all(data.map(async (habit) => {
+        // Force refresh if stats were never calculated (0) or if it's a new day
+        if (habit.last_updated_date !== todayStr || (habit.highest_streak === 0 && habit.completed_count > 0)) {
+          console.log(`Refreshing stats for: ${habit.name}`);
+          await habitService.refreshHabitStats(habit.id);
         }
+      }));
 
-        // Now check backwards
-        while (true) {
-          const dateStr = toLocalISO(checkDate);
-          if (habitLogs.includes(dateStr)) {
-            streak++;
-            // Move to previous scheduled day
-            do {
-              checkDate.setDate(checkDate.getDate() - 1);
-            } while (!schedule.includes(checkDate.getDay()));
-          } else {
-            // If it's today and not completed yet, that's okay, streak might still be alive from yesterday
-            const isToday = toLocalISO(new Date()) === dateStr;
-            if (isToday) {
-              // Move to previous scheduled day and continue checking
-              do {
-                checkDate.setDate(checkDate.getDate() - 1);
-              } while (!schedule.includes(checkDate.getDay()));
-
-              const prevDateStr = toLocalISO(checkDate);
-              if (habitLogs.includes(prevDateStr)) {
-                // Streak is alive but hasn't increased today yet
-                continue;
-              } else {
-                break;
-              }
-            } else {
-              break;
-            }
-          }
-        }
-        streaks[habit.id] = streak;
-      });
-
-      setHabitStreaks(streaks);
+      // Re-fetch to get fresh stats
+      const freshData = await habitService.getHabits();
+      setHabits(freshData);
     } catch (error) {
+      console.error(error);
       toast.error('Failed to load habits');
     } finally {
       setLoading(false);
@@ -186,14 +137,29 @@ export const HabitsView = () => {
                     {habit.description && (
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{habit.description}</p>
                     )}
-                    <div className="flex items-center gap-4 mt-3">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3">
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground/60">
                         <Calendar className="w-3.5 h-3.5" />
                         <span>{getScheduleLabel(habit.days_of_week)}</span>
                       </div>
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-warning/70">
                         <Flame className="w-3.5 h-3.5" />
-                        <span>{habitStreaks[habit.id] || 0} Day Streak</span>
+                        <span>{habit.current_streak} Day Streak</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-destructive/60">
+                        <X className="w-3.5 h-3.5" />
+                        <span>{habit.missed_count} Missed</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 mt-2 pt-2 border-t border-white/5">
+                      <div className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-wider flex items-center gap-1">
+                        <Award className="w-3 h-3" />
+                        <span>Best: {habit.highest_streak}d</span>
+                      </div>
+                      <div className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-wider flex items-center gap-1">
+                        <Activity className="w-3 h-3" />
+                        <span>Slump: {habit.highest_miss_streak}d</span>
                       </div>
                     </div>
                   </div>

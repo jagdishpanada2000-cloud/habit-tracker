@@ -7,6 +7,7 @@ interface CircularProgressProps {
   label?: string;
   sublabel?: string;
   className?: string;
+  isVisible?: boolean;
 }
 
 export const CircularProgress = ({
@@ -16,10 +17,12 @@ export const CircularProgress = ({
   label,
   sublabel,
   className,
+  isVisible = true,
 }: CircularProgressProps) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percentage / 100) * circumference;
+  const currentPercentage = isVisible ? percentage : 0;
+  const offset = circumference - (currentPercentage / 100) * circumference;
 
   return (
     <div className={cn('relative inline-flex items-center justify-center', className)}>
@@ -33,6 +36,7 @@ export const CircularProgress = ({
           strokeWidth={strokeWidth}
         />
         <circle
+          key={`circle-${isVisible}-${percentage}`}
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -42,7 +46,7 @@ export const CircularProgress = ({
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          className="transition-all duration-700 ease-out"
+          className="transition-all duration-1000 ease-in-out"
           style={{
             filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))',
           }}
@@ -53,7 +57,7 @@ export const CircularProgress = ({
           className="font-semibold tracking-tight text-foreground leading-none"
           style={{ fontSize: size * 0.22 }}
         >
-          {percentage}%
+          {isVisible ? `${percentage}%` : '0%'}
         </span>
         {label && <span className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">{label}</span>}
         {sublabel && <span className="text-[9px] text-muted-foreground/60">{sublabel}</span>}

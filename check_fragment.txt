@@ -1,0 +1,25 @@
+﻿            .insert({
+                ...habit,
+                user_id: user.id
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data as Habit;
+    },
+
+    async updateHabit(id: string, updates: Partial<Habit>): Promise<Habit> {
+        const { data, error } = await supabase
+            .from('habits')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data as Habit;
+    },
+
+    async refreshHabitStats(habitId: string): Promise<void> {
+        const { data: habit, error: habitError } = await supabase

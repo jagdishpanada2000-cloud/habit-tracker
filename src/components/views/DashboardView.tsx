@@ -1,6 +1,7 @@
 'use client';
 
 import { HabitGrid } from '@/components/habits/HabitGrid';
+import { HabitTrendsGraph } from '@/components/habits/HabitTrendsGraph';
 import { StatsSection } from '@/components/stats/StatsSection';
 import { AIInsightsCard } from '@/components/ai/AIInsightsCard';
 import { CreateHabitDialog } from '@/components/habits/CreateHabitDialog';
@@ -36,6 +37,10 @@ export const DashboardView = ({ currentMonth, userCreatedAt }: DashboardViewProp
 
       <section>
         <HabitGrid key={refreshKey} currentMonth={currentMonth} userCreatedAt={userCreatedAt} />
+      </section>
+
+      <section>
+        <HabitTrendsGraph currentMonth={currentMonth} />
       </section>
 
       <div className="grid grid-cols-1 gap-12">

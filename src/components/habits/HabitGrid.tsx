@@ -61,6 +61,16 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
       // 1. Fetch Habits
       const habitsData = await habitService.getHabits();
 
+      // Refresh stats for habits that haven't been updated today or are missing records
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+      await Promise.all(habitsData.map(async (habit) => {
+        if (habit.last_updated_date !== todayStr || (habit.highest_streak === 0 && habit.completed_count > 0)) {
+          await habitService.refreshHabitStats(habit.id);
+        }
+      }));
+
       // 2. Fetch Logs for this month
       const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
       const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
@@ -106,6 +116,19 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
   }, [loading, isCurrentMonth, currentDay]);
 
   const toggleDay = async (habitId: string, day: number) => {
+    // Safety check: prevent ticking future dates
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    const now = new Date();
+
+    // Normalize today for comparison
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfCell = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    if (startOfCell > startOfToday) {
+      toast.error('Cannot track future dates');
+      return;
+    }
+
     // Optimistic Update
     setHabits(prev => prev.map(habit => {
       if (habit.id === habitId) {
@@ -121,7 +144,6 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
     }));
 
     try {
-      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
       await logService.toggleCompletion(habitId, date);
     } catch (error) {
       // Revert if failed
@@ -176,39 +198,38 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
         </div>
 
         {/* Legend for Mobile: Shows Habit names above the scrollable table */}
-        <div className="flex flex-wrap gap-x-4 gap-y-2 mb-4 px-2 lg:hidden">
+        <div className="flex flex-wrap gap-x-2.5 gap-y-1.5 mb-2.5 px-1 lg:hidden">
           {habits.map((habit) => (
-            <div key={habit.id} className="flex items-center gap-1.5">
+            <div key={habit.id} className="flex items-center gap-1">
               <div
-                className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.3)]"
+                className="w-1.5 h-1.5 rounded-full shadow-[0_0_4px_rgba(0,0,0,0.2)]"
                 style={{ backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))' }}
               />
-              <span className="text-[11px] font-bold text-foreground/70 tracking-tight">{habit.name}</span>
+              <span className="text-[9px] font-bold text-foreground/60 tracking-tight uppercase">{habit.name}</span>
             </div>
           ))}
         </div>
 
         <div className="glass-card overflow-hidden border-white/5 shadow-2xl relative w-full">
-          <div className="overflow-x-auto scrollbar-hide touch-pan-x" ref={scrollRef}>
+          <div className="overflow-x-auto scrollbar-hide" ref={scrollRef}>
             <table className="w-full border-separate border-spacing-0">
               <thead>
                 <tr className="bg-white/[0.02]">
                   <th className="sticky left-0 z-30 bg-card/95 backdrop-blur-xl min-w-[140px] sm:min-w-[180px] text-left py-5 pr-4 pl-5 border-b border-white/5 shadow-[8px_0_12px_-4px_rgba(0,0,0,0.2)] lg:table-cell hidden">
                     <span className="text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">Routine</span>
                   </th>
-                  {/* On Mobile, we hide the Routine column and show it as a legend above */}
-                  <th className="sticky left-0 z-30 bg-card/95 backdrop-blur-xl min-w-[50px] text-center py-5 border-b border-white/5 shadow-[8px_0_12px_-4px_rgba(0,0,0,0.2)] lg:hidden">
-                    <span className="text-[10px] uppercase tracking-widest font-black text-muted-foreground/60">#</span>
+                  <th className="sticky left-0 z-30 bg-card/95 backdrop-blur-xl min-w-[34px] text-center py-2.5 border-b border-white/5 shadow-[8px_0_12px_-4px_rgba(0,0,0,0.2)] lg:hidden">
+                    <span className="text-[8px] uppercase tracking-widest font-black text-muted-foreground/30">#</span>
                   </th>
                   {days.map(day => (
                     <th
                       key={day}
                       data-day={day}
-                      className="px-1 py-5 min-w-[48px] sm:min-w-[40px] border-b border-white/5 text-center transition-all bg-white/[0.01]"
+                      className="px-0.5 py-4 min-w-[44px] sm:min-w-[40px] border-b border-white/5 text-center transition-all bg-white/[0.01]"
                     >
                       <span className={cn(
-                        'text-xs font-bold transition-all duration-300 block',
-                        day === currentDay ? 'text-primary scale-125' : 'text-muted-foreground/30'
+                        'text-[10px] sm:text-xs font-bold transition-all duration-300 block',
+                        day === currentDay ? 'text-primary scale-110' : 'text-muted-foreground/20'
                       )}>
                         {day}
                       </span>
@@ -273,11 +294,11 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                       </td>
 
                       {/* Mobile Indicator Column */}
-                      <td className="sticky left-0 z-20 bg-card/95 backdrop-blur-xl py-4 border-b border-white/5 shadow-[8px_0_12px_-4px_rgba(0,0,0,0.2)] lg:hidden text-center">
+                      <td className="sticky left-0 z-20 bg-card/95 backdrop-blur-xl py-3 border-b border-white/5 shadow-[8px_0_12px_-4px_rgba(0,0,0,0.2)] lg:hidden text-center">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <button
-                              className="w-6 h-6 mx-auto rounded-full shadow-[0_0_8px_rgba(0,0,0,0.3)] flex items-center justify-center text-[10px] font-black text-white"
+                              className="w-5 h-5 mx-auto rounded-full shadow-[0_0_8px_rgba(0,0,0,0.3)] flex items-center justify-center text-[9px] font-black text-white"
                               style={{ backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))' }}
                             >
                               {habit.name.charAt(0).toUpperCase()}
@@ -302,38 +323,39 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                         const inSchedule = isDayInSchedule(habit, day);
                         const cellDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
 
-                        const realToday = new Date();
-                        realToday.setHours(0, 0, 0, 0);
-
-                        const isFuture = cellDate > realToday;
-                        const isPast = cellDate < realToday;
-
                         let isBeforeCreation = false;
                         if (userCreatedAt) {
                           const creationStart = new Date(userCreatedAt);
                           creationStart.setHours(0, 0, 0, 0);
-                          isBeforeCreation = cellDate < creationStart;
+                          const cellReset = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
+                          isBeforeCreation = cellReset < creationStart;
                         }
 
-                        // Users can only EDIT the running day (today)
-                        const isEditable = isToday;
+                        // Normalize dates for comparison
+                        const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                        const startOfCell = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
+
+                        // Users can edit today and past days, but NOT future days
+                        const isFuture = startOfCell > startOfToday;
+                        const isEditable = !isFuture && !isBeforeCreation;
                         const isDisabled = !isEditable;
 
                         return (
                           <td key={day} className={cn(
-                            "px-1 py-4 border-b border-white/5 text-center transition-opacity relative",
-                            !inSchedule && !isCompleted && "opacity-10"
+                            "px-0.5 py-1.5 sm:py-3 border-b border-white/5 text-center transition-opacity relative",
+                            !inSchedule && !isCompleted && "opacity-10",
+                            isFuture && "opacity-20 cursor-not-allowed"
                           )}>
-                            <div className="flex justify-center relative touch-none">
+                            <div className="flex justify-center relative">
                               <button
                                 onClick={() => !isDisabled && toggleDay(habit.id, day)}
                                 disabled={isDisabled}
                                 className={cn(
-                                  'habit-check w-8 h-8 sm:w-7 sm:h-7 rounded-xl flex items-center justify-center transition-all',
-                                  isEditable && 'active:scale-75',
-                                  isCompleted ? 'animate-check-pop border-transparent scale-110' : 'bg-white/[0.03] border border-white/5 hover:border-primary/40',
-                                  isToday && !isCompleted && 'border-primary ring-4 ring-primary/10 shadow-[0_0_10px_hsl(var(--primary)/0.2)]',
-                                  isDisabled && 'cursor-default'
+                                  'habit-check w-5.5 h-5.5 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center transition-all',
+                                  isEditable && 'active:scale-75 hover:border-primary/40',
+                                  isCompleted ? 'animate-check-pop border-transparent scale-105' : 'bg-white/[0.03] border border-white/5',
+                                  isToday && !isCompleted && 'border-primary ring-2 ring-primary/10 shadow-[0_0_10px_hsl(var(--primary)/0.2)]',
+                                  isDisabled && 'cursor-not-allowed opacity-50'
                                 )}
                                 style={isCompleted ? {
                                   backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))',
@@ -341,13 +363,13 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                                 } : {}}
                               >
                                 {isCompleted && (
-                                  <Check className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-white" strokeWidth={4} />
+                                  <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" strokeWidth={4} />
                                 )}
                                 {!isCompleted && isToday && inSchedule && (
-                                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))' }} />
+                                  <div className="w-1 h-1 rounded-full animate-pulse" style={{ backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))' }} />
                                 )}
                                 {!isCompleted && !inSchedule && (
-                                  <div className="w-1 h-1 rounded-full bg-white/10" />
+                                  <div className="w-0.5 h-0.5 rounded-full bg-white/10" />
                                 )}
                               </button>
                             </div>

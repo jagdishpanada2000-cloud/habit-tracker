@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TrendingUp, TrendingDown, Flame, Target } from 'lucide-react';
 import { CircularProgress } from './CircularProgress';
 import { WeeklyChart } from './WeeklyChart';
@@ -27,6 +27,24 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
   });
   const [weeklyData, setWeeklyData] = useState<{ day: string; value: number }[]>([]);
   const [topHabits, setTopHabits] = useState<TopHabit[]>([]);
+
+  const [isSectionVisible, setIsSectionVisible] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsSectionVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -220,7 +238,7 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-10 animate-fade-in px-1">
+    <div className="flex flex-col gap-10 animate-fade-in px-1" ref={sectionRef}>
       {/* Overview Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="flex flex-col">
@@ -232,6 +250,7 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
               strokeWidth={12}
               label="completed"
               sublabel="this month"
+              isVisible={isSectionVisible}
             />
             <div className={cn(
               "flex items-center gap-2 mt-6 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-300",
@@ -248,7 +267,7 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
         <div className="flex flex-col">
           <h3 className="mobile-section-title">Weekly Consistency</h3>
           <div className="glass-card p-6 flex flex-col justify-center min-h-[240px]">
-            <WeeklyChart data={weeklyData} />
+            <WeeklyChart data={weeklyData} isVisible={isSectionVisible} />
           </div>
         </div>
       </div>

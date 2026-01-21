@@ -1,5 +1,6 @@
 
 import { supabase } from '@/lib/supabase';
+import { habitService } from './habits';
 
 export interface HabitLog {
     id: string;
@@ -60,6 +61,7 @@ export const logService = {
                 .eq('id', existing.id);
 
             if (error) throw error;
+            await habitService.refreshHabitStats(habitId);
             return false; // Not completed anymore
         } else {
             // Add it (toggle on)
@@ -72,6 +74,7 @@ export const logService = {
                 });
 
             if (error) throw error;
+            await habitService.refreshHabitStats(habitId);
             return true; // Completed
         }
     }

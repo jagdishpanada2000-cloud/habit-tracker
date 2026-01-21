@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TrendingUp, Target, Flame, Award, Calendar, BarChart2, Activity, Layers } from 'lucide-react';
+import { TrendingUp, Target, Flame, Award, Calendar, BarChart2, Activity, Layers, XCircle } from 'lucide-react';
 import { CircularProgress } from '@/components/stats/CircularProgress';
 import { cn } from '@/lib/utils';
 import { habitService, Habit } from '@/services/habits';
@@ -19,7 +19,7 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
     { label: 'Active Habits', value: '0', icon: Target },
     { label: 'Completion', value: '0%', icon: TrendingUp },
     { label: 'Streak', value: '0', icon: Flame },
-    { label: 'Best', value: '0', icon: Award },
+    { label: 'Missed', value: '0', icon: XCircle },
   ]);
   const [monthlyData, setMonthlyData] = useState<{ month: string, value: number }[]>([]);
   const [weeklyOverview, setWeeklyOverview] = useState<{ week: string, value: number }[]>([]);
@@ -30,6 +30,7 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
   }>({
     mostActive: { day: '-', value: 0 },
   });
+  const [visibleHabits, setVisibleHabits] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,11 +104,13 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
         });
         if (currentStreak > bestStreak) bestStreak = currentStreak;
 
+        const totalMissed = habitsData.reduce((acc, h) => acc + (h.missed_count || 0), 0);
+
         setStats([
           { label: 'Active Habits', value: totalHabits.toString(), icon: Target },
           { label: 'Completion', value: `${currentCompletionRate}%`, icon: TrendingUp },
           { label: 'Streak', value: currentStreak.toString(), icon: Flame },
-          { label: 'Best', value: bestStreak.toString(), icon: Award },
+          { label: 'Missed', value: totalMissed.toString(), icon: XCircle },
         ]);
 
         // Monthly Progress
@@ -161,7 +164,7 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
 
           let totalPossible = 0;
           habitsData.forEach(h => {
-            const schedule = h.days_of_week || [0, 1, 2, 3, 4, 5, 6];
+             const schedule = (h.days_of_week && h.days_of_week.length > 0) ? h.days_of_week : [0, 1, 2, 3, 4, 5, 6];
             // If it's a past week, count all scheduled days in that week
             // If it's the current week, only count scheduled days up to today
             const endDayInWeek = i === 0 ? daysSinceMonday : 6;
@@ -205,7 +208,7 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
           habitsData.forEach(h => {
             let completionsInWindow = 0;
             let possibleInWindow = 0;
-            const schedule = h.days_of_week || [0, 1, 2, 3, 4, 5, 6];
+            const schedule = (h.days_of_week && h.days_of_week.length > 0) ? h.days_of_week : [0, 1, 2, 3, 4, 5, 6];
 
             for (let j = 0; j < 7; j++) {
               const checkDate = new Date(targetDate);
@@ -223,6 +226,37 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
           compData.push(entry);
         }
         setComparisonData(compData);
+
+        // Calculate performance to set default visibility
+        if (habitsData.length > 0) {
+          const performances = habitsData.map(h => {
+            let completions = 0;
+            let possible = 0;
+            const schedule = (h.days_of_week && h.days_of_week.length > 0) ? h.days_of_week : [0, 1, 2, 3, 4, 5, 6];
+            for (let i = 0; i < 30; i++) {
+              const d = new Date(today);
+              d.setDate(today.getDate() - i);
+              if (schedule.includes(d.getDay())) {
+                possible++;
+                if (logs.some(l => l.habit_id === h.id && l.completed_date === toLocal(d))) {
+                  completions++;
+                }
+              }
+            }
+            return { name: h.name, rate: possible > 0 ? completions / possible : 0 };
+          });
+
+          performances.sort((a, b) => b.rate - a.rate);
+          const top = performances[0].name;
+          const worst = performances[performances.length - 1].name;
+
+          const defaultVisible = new Set<string>();
+          defaultVisible.add(top);
+          if (top !== worst) {
+            defaultVisible.add(worst);
+          }
+          setVisibleHabits(defaultVisible);
+        }
 
         // Day stats
         const daysMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -367,7 +401,30 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
                   backdropFilter: 'blur(8px)'
                 }}
               />
-              <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: 9, paddingTop: 10, opacity: 0.6 }} />
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                iconType="circle"
+                wrapperStyle={{ fontSize: 9, paddingTop: 10, cursor: 'pointer' }}
+                formatter={(value: string) => (
+                  <span className={visibleHabits.has(value) ? "opacity-100" : "opacity-30 transition-opacity"}>
+                    {value}
+                  </span>
+                )}
+                onClick={(e: any) => {
+                  const name = e.value;
+                  const nextVisible = new Set(visibleHabits);
+                  if (nextVisible.has(name)) {
+                    // Don't allow deselecting last one
+                    if (nextVisible.size > 1) {
+                      nextVisible.delete(name);
+                    }
+                  } else {
+                    nextVisible.add(name);
+                  }
+                  setVisibleHabits(nextVisible);
+                }}
+              />
               {habits.map((h, i) => (
                 <Line
                   key={i}
@@ -377,6 +434,7 @@ export const AnalyticsView = ({ userCreatedAt }: AnalyticsViewProps) => {
                   strokeWidth={2}
                   dot={false}
                   activeDot={{ r: 4 }}
+                  hide={!visibleHabits.has(h.name)}
                 />
               ))}
             </LineChart>
