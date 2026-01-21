@@ -89,7 +89,14 @@ export const CreateHabitDialog = ({ onHabitCreated, isFab }: CreateHabitDialogPr
 
                     <div className="space-y-2">
                         <Label htmlFor="description">Description (Optional)</Label>
-                        <Input id="description" placeholder="e.g. 30 mins of cardio" {...register('description')} />
+                        <Input
+                            id="description"
+                            placeholder="e.g. 30 mins of cardio (Describe your goal for better AI assistance)"
+                            {...register('description')}
+                        />
+                        <p className="text-[10px] text-muted-foreground opacity-70">
+                            * Detailed descriptions help our AI Coach provide better insights.
+                        </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -115,23 +122,7 @@ export const CreateHabitDialog = ({ onHabitCreated, isFab }: CreateHabitDialogPr
                                 id="schedule"
                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 defaultValue="everyday"
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    let days = [0, 1, 2, 3, 4, 5, 6];
-                                    if (val === 'weekdays') days = [1, 2, 3, 4, 5];
-                                    else if (val === 'weekends') days = [0, 6];
-                                    else if (val === 'sun') days = [0];
-                                    else if (val === 'mon') days = [1];
-                                    else if (val === 'tue') days = [2];
-                                    else if (val === 'wed') days = [3];
-                                    else if (val === 'thu') days = [4];
-                                    else if (val === 'fri') days = [5];
-                                    else if (val === 'sat') days = [6];
-
-                                    // We need to set this in the form state
-                                    // Since we're using react-hook-form, we can use setValue or just include it in register
-                                }}
-                                {...register('frequency')} // Note: we'll repurpose frequency or just use it as a trigger
+                                {...register('frequency')}
                             >
                                 <option value="everyday">Everyday</option>
                                 <option value="weekdays">Except Weekends (Mon-Fri)</option>

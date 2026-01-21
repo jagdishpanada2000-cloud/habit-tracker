@@ -13,7 +13,7 @@ interface CircularProgressProps {
 export const CircularProgress = ({
   percentage,
   size = 120,
-  strokeWidth = 8,
+  strokeWidth = 6,
   label,
   sublabel,
   className,
@@ -36,13 +36,13 @@ export const CircularProgress = ({
           strokeWidth={strokeWidth}
         />
         <circle
-          key={`circle-${isVisible}-${percentage}`}
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
           stroke="hsl(var(--primary))"
           strokeWidth={strokeWidth}
+
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"

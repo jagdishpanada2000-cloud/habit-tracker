@@ -12,7 +12,7 @@ const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
   { id: 'habits', label: 'Habits', icon: ListChecks },
   { id: 'analytics', label: 'Stats', icon: BarChart3 },
-  { id: 'ai-coach', label: 'AI', icon: Sparkles, locked: true },
+  { id: 'ai-coach', label: 'AI (Soon)', icon: Sparkles, locked: true },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
@@ -23,7 +23,7 @@ interface BottomNavProps {
 
 export const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-2xl border-t border-white/5 px-4 pt-3 safe-area-pb shadow-[0_-8px_20px_rgba(0,0,0,0.3)]">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-xl border-t border-white/5 px-4 pt-3 safe-area-pb shadow-[0_-8px_20px_rgba(0,0,0,0.3)]">
       <div className="flex items-center justify-around max-w-md mx-auto">
         {navItems.map((item) => {
           const isActive = activeTab === item.id;

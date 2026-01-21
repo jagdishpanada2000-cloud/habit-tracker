@@ -40,8 +40,11 @@ export const habitService = {
             .eq('archived', false)
             .order('created_at', { ascending: true });
 
-        if (error) throw error;
-        return data as Habit[];
+        if (error) {
+            console.error('getHabits error:', error);
+            throw error;
+        }
+        return (data || []) as Habit[];
     },
 
     async createHabit(habit: CreateHabitDTO): Promise<Habit> {
@@ -82,9 +85,12 @@ export const habitService = {
             .from('habits')
             .select('*')
             .eq('id', habitId)
-            .single();
+            .maybeSingle();
 
-        if (habitError || !habit) return;
+        if (habitError || !habit) {
+            if (habitError) console.error(`Error fetching habit ${habitId}:`, habitError);
+            return;
+        }
 
         const typedHabit = habit as Habit;
         const now = new Date();

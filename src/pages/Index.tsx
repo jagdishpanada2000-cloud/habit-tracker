@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TopBar } from '@/components/layout/TopBar';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -10,13 +10,18 @@ import { AnalyticsView } from '@/components/views/AnalyticsView';
 import { AICoachView } from '@/components/views/AICoachView';
 import { SettingsView } from '@/components/views/SettingsView';
 import { AuthOverlay } from '@/components/auth/AuthOverlay';
+import { Snowfall } from '@/components/effects/Snowfall';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
   const [userCreatedAt, setUserCreatedAt] = useState<Date | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -24,6 +29,12 @@ const Index = () => {
         setUserCreatedAt(new Date(user.created_at));
       }
     });
+  }, []);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.35;
+    }
   }, []);
 
   const today = new Date();
@@ -67,7 +78,23 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-transparent overflow-x-hidden relative">
+      {/* Background Video with Watermark Hiding */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute min-w-full min-h-full object-cover scale-[1.35] translate-x-8 -translate-y-8 opacity-40 mix-blend-screen"
+        >
+          <source src="/bg-video.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]" />
+      </div>
+
+      <Snowfall />
       <AuthOverlay />
       <TopBar
         currentMonth={currentMonth}
@@ -77,7 +104,7 @@ const Index = () => {
         canNext={canNext}
       />
 
-      <div className="flex">
+      <div className="flex pt-20">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
         <main className="flex-1 px-3 py-4 lg:p-6 pb-24 lg:pb-6 max-w-7xl w-full overflow-x-hidden">

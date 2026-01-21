@@ -30,8 +30,11 @@ export const logService = {
             .gte('completed_date', startStr)
             .lte('completed_date', endStr);
 
-        if (error) throw error;
-        return data as HabitLog[];
+        if (error) {
+            console.error('getLogs error:', error);
+            throw error;
+        }
+        return (data || []) as HabitLog[];
     },
 
     // Toggle completion for a habit on a specific date
@@ -46,26 +49,34 @@ export const logService = {
         if (!user) throw new Error('User not authenticated');
 
         // Check if exists
-        const { data: existing } = await supabase
+        const { data: existing, error: fetchError } = await supabase
             .from('habit_logs')
             .select('id')
             .eq('habit_id', habitId)
             .eq('completed_date', dateStr)
-            .single();
+            .maybeSingle();
+
+        if (fetchError) {
+            console.error('Error checking existing log:', fetchError);
+            throw fetchError;
+        }
 
         if (existing) {
             // Remove it (toggle off)
-            const { error } = await supabase
+            const { error: deleteError } = await supabase
                 .from('habit_logs')
                 .delete()
                 .eq('id', existing.id);
 
-            if (error) throw error;
+            if (deleteError) {
+                console.error('Error deleting log:', deleteError);
+                throw deleteError;
+            }
             await habitService.refreshHabitStats(habitId);
             return false; // Not completed anymore
         } else {
             // Add it (toggle on)
-            const { error } = await supabase
+            const { error: insertError } = await supabase
                 .from('habit_logs')
                 .insert({
                     habit_id: habitId,
@@ -73,7 +84,10 @@ export const logService = {
                     completed_date: dateStr
                 });
 
-            if (error) throw error;
+            if (insertError) {
+                console.error('Error inserting log:', insertError);
+                throw insertError;
+            }
             await habitService.refreshHabitStats(habitId);
             return true; // Completed
         }

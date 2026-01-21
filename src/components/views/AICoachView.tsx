@@ -90,6 +90,9 @@ export const AICoachView = () => {
           <div className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-secondary" />
             <h1 className="text-2xl font-bold">AI Coach</h1>
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-secondary/20 text-secondary animate-pulse">
+              COMING SOON
+            </span>
           </div>
           <p className="text-muted-foreground text-sm mt-1">Unlock intelligent insights powered by AI</p>
         </div>

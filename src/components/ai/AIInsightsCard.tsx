@@ -47,6 +47,9 @@ export const AIInsightsCard = () => {
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="w-5 h-5 text-secondary" />
         <h3 className="text-lg font-semibold">AI Insights</h3>
+        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-secondary/20 text-secondary animate-pulse">
+          COMING SOON
+        </span>
         {isPro && (
           <span className="text-xs px-2 py-0.5 rounded-full bg-secondary/20 text-secondary ml-auto">
             Pro Active

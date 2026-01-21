@@ -35,7 +35,7 @@ export const TopBar = ({ currentMonth, onPrevMonth, onNextMonth, canPrev = true,
   };
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between px-3 py-4 lg:px-8 bg-background/60 backdrop-blur-2xl border-b border-white/5">
+    <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-3 py-4 lg:px-8 bg-black/40 backdrop-blur-md border-b border-white/5">
       <div className="flex items-center gap-2.5 shrink-0">
         <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center ring-1 ring-primary/20 text-primary">
           <div className="w-3.5 h-3.5 rounded-sm bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.5)]" />

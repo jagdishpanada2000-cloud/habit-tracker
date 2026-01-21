@@ -64,6 +64,14 @@ export const HabitTrendsGraph = ({ currentMonth }: HabitTrendsGraphProps) => {
 
             // Reference date for the "center" of the 10 points
             const realToday = new Date();
+            const isFutureMonth = currentMonth > new Date(realToday.getFullYear(), realToday.getMonth(), 1);
+
+            if (isFutureMonth) {
+                setData([]);
+                setLoading(false);
+                return;
+            }
+
             const isCurrentMonthView = currentMonth.getMonth() === realToday.getMonth() && currentMonth.getFullYear() === realToday.getFullYear();
 
             let referenceDate: Date;
@@ -117,8 +125,8 @@ export const HabitTrendsGraph = ({ currentMonth }: HabitTrendsGraphProps) => {
             });
 
             setData(chartData);
-        } catch (error) {
-            console.error('Failed to load chart data:', error);
+        } catch (error: any) {
+            console.error('HabitTrendsGraph loadData error:', error.message || error);
         } finally {
             setLoading(false);
         }

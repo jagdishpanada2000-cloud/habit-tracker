@@ -44,7 +44,8 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [loading]); // Re-run when loading is finished to ensure ref is attached
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,6 +61,19 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
 
         // Determine Reference Date (The "Today" of the view)
         const realToday = new Date();
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        // Check if viewing a future month
+        const isFutureMonth = currentMonth > new Date(realToday.getFullYear(), realToday.getMonth(), 1);
+
+        if (isFutureMonth) {
+          setMonthlyStats({ percentage: 0, trend: 0 });
+          setWeeklyData(dayNames.map(name => ({ day: name, value: 0 })));
+          setTopHabits([]);
+          setLoading(false);
+          return;
+        }
+
         const isCurrentCalendarMonth =
           realToday.getFullYear() === currentMonth.getFullYear() &&
           realToday.getMonth() === currentMonth.getMonth();
@@ -75,7 +89,6 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
         const prevMonthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 0);
 
         // Fetch logs
-        // Range: enough to cover Previous Month -> View Date
         const logs = await logService.getLogs(prevMonthStart, viewDate);
 
         const toLocal = (d: Date) => {
@@ -87,14 +100,15 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
 
         // --- 1. Monthly Progress & Trend ---
         const getMonthRate = (start: Date, end: Date, relevantLogs: HabitLog[]) => {
-          const daysPassed = end.getDate();
+          const daysToProcess = end.getDate();
           let totalPossible = 0;
           let totalActual = 0;
 
           habits.forEach(h => {
-            for (let d = 1; d <= daysPassed; d++) {
+            for (let d = 1; d <= daysToProcess; d++) {
               const checkDate = new Date(start.getFullYear(), start.getMonth(), d);
-              if (h.days_of_week.includes(checkDate.getDay())) {
+              const schedule = h.days_of_week || [0, 1, 2, 3, 4, 5, 6];
+              if (schedule.includes(checkDate.getDay())) {
                 totalPossible++;
 
                 const dStr = toLocal(checkDate);
@@ -107,8 +121,15 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
           return totalPossible > 0 ? Math.round((totalActual / totalPossible) * 100) : 0;
         };
 
+        // Compare current progress with SAME PORTION of last month
         const currentRate = getMonthRate(viewMonthStart, viewDate, logs);
-        const prevRate = getMonthRate(prevMonthStart, prevMonthEnd, logs);
+
+        // For previous month, we only look up to the same day of the month
+        const sameDayLastMonth = new Date(prevMonthStart.getFullYear(), prevMonthStart.getMonth(), viewDate.getDate());
+        // Clamp it to the end of the previous month just in case (e.g. Jan 31 -> Feb 28)
+        const cappedLastMonthDay = sameDayLastMonth > prevMonthEnd ? prevMonthEnd : sameDayLastMonth;
+
+        const prevRate = getMonthRate(prevMonthStart, cappedLastMonthDay, logs);
         const trend = currentRate - prevRate;
 
         setMonthlyStats({
@@ -118,7 +139,6 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
 
         // --- 2. Weekly Consistency ---
         const weekDataPoints = [];
-        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         for (let i = 6; i >= 0; i--) {
           const d = new Date(viewDate);
@@ -131,7 +151,8 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
           let dayLogged = 0;
 
           habits.forEach(h => {
-            if (h.days_of_week.includes(dayOfWeek)) {
+            const schedule = h.days_of_week || [0, 1, 2, 3, 4, 5, 6];
+            if (schedule.includes(dayOfWeek)) {
               dayPossible++;
               if (logs.some(l => l.habit_id === h.id && l.completed_date === dStr)) {
                 dayLogged++;
@@ -140,7 +161,26 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
           });
 
           const val = dayPossible > 0 ? Math.round((dayLogged / dayPossible) * 100) : 0;
-          weekDataPoints.push({ day: dName, value: val });
+
+          const isToday = dStr === toLocal(realToday);
+
+          // Check if d is in the same week as realToday
+          // Using a simple check: same year and same week number (approx)
+          // Better: check if it's within [Monday, Sunday] of realToday
+          const sunday = new Date(realToday);
+          sunday.setDate(realToday.getDate() - realToday.getDay());
+          sunday.setHours(0, 0, 0, 0);
+          const nextMonday = new Date(sunday);
+          nextMonday.setDate(sunday.getDate() + 7);
+
+          const isRunningWeek = d >= sunday && d < nextMonday;
+
+          weekDataPoints.push({
+            day: dName,
+            value: val,
+            isToday,
+            isRunningWeek
+          });
         }
         setWeeklyData(weekDataPoints);
 
@@ -220,8 +260,8 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
         habitsStats.sort((a, b) => b.percentage - a.percentage || b.streak - a.streak);
         setTopHabits(habitsStats.slice(0, 3));
 
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        console.error('StatsSection fetchData error:', error.message || error);
       } finally {
         setLoading(false);
       }

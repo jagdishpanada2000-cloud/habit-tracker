@@ -51,6 +51,7 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
 
   const today = new Date();
   const isCurrentMonth = today.getMonth() === currentMonth.getMonth() && today.getFullYear() === currentMonth.getFullYear();
+  const isFutureMonth = currentMonth > new Date(today.getFullYear(), today.getMonth(), 1);
   const currentDay = isCurrentMonth ? today.getDate() : -1;
 
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -88,8 +89,8 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
       });
 
       setHabits(combined);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error('HabitGrid loadData error:', error.message || error);
       toast.error('Failed to load habits');
     } finally {
       setLoading(false);
@@ -177,7 +178,8 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
   const isDayInSchedule = (habit: Habit, dayOfMonth: number) => {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), dayOfMonth);
     const dayOfWeek = date.getDay(); // 0-6
-    return habit.days_of_week.includes(dayOfWeek);
+    const schedule = habit.days_of_week || [0, 1, 2, 3, 4, 5, 6];
+    return schedule.includes(dayOfWeek);
   };
 
   if (loading) {
@@ -238,7 +240,18 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                 </tr>
               </thead>
               <tbody>
-                {habits.length === 0 ? (
+                {isFutureMonth ? (
+                  <tr>
+                    <td colSpan={days.length + 1} className="py-24 text-center">
+                      <div className="flex flex-col items-center gap-3 opacity-60">
+                        <Calendar className="w-8 h-8 text-muted-foreground/30" />
+                        <p className="text-sm font-medium text-muted-foreground italic">
+                          This month hasn't started yet
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : habits.length === 0 ? (
                   <tr>
                     <td colSpan={days.length + 1} className="py-20 text-center text-muted-foreground text-sm italic opacity-50">
                       No routines for this period
@@ -336,8 +349,9 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                         const startOfCell = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
 
                         // Users can edit today and past days, but NOT future days
+                        // ALSO respect the habit schedule
                         const isFuture = startOfCell > startOfToday;
-                        const isEditable = !isFuture && !isBeforeCreation;
+                        const isEditable = !isFuture && !isBeforeCreation && inSchedule;
                         const isDisabled = !isEditable;
 
                         return (
@@ -351,22 +365,22 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                                 onClick={() => !isDisabled && toggleDay(habit.id, day)}
                                 disabled={isDisabled}
                                 className={cn(
-                                  'habit-check w-5.5 h-5.5 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center transition-all',
+                                  'habit-check w-3 h-3 sm:w-[13px] sm:h-[13px] rounded-sm flex items-center justify-center transition-all',
                                   isEditable && 'active:scale-75 hover:border-primary/40',
                                   isCompleted ? 'animate-check-pop border-transparent scale-105' : 'bg-white/[0.03] border border-white/5',
-                                  isToday && !isCompleted && 'border-primary ring-2 ring-primary/10 shadow-[0_0_10px_hsl(var(--primary)/0.2)]',
+                                  isToday && !isCompleted && 'border-primary/50 ring-1 ring-primary/10',
                                   isDisabled && 'cursor-not-allowed opacity-50'
                                 )}
                                 style={isCompleted ? {
                                   backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))',
-                                  boxShadow: `0 0 15px ${habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))'}66`
+                                  boxShadow: `0 0 10px ${habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))'}44`
                                 } : {}}
                               >
                                 {isCompleted && (
-                                  <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" strokeWidth={4} />
+                                  <Check className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-white" strokeWidth={4} />
                                 )}
                                 {!isCompleted && isToday && inSchedule && (
-                                  <div className="w-1 h-1 rounded-full animate-pulse" style={{ backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))' }} />
+                                  <div className="w-0.5 h-0.5 rounded-full animate-pulse" style={{ backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))' }} />
                                 )}
                                 {!isCompleted && !inSchedule && (
                                   <div className="w-0.5 h-0.5 rounded-full bg-white/10" />

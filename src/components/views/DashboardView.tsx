@@ -23,12 +23,7 @@ export const DashboardView = ({ currentMonth, userCreatedAt }: DashboardViewProp
   return (
     <div className="flex flex-col gap-10 pb-20">
       <div className="pt-4 px-2 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tighter mb-1 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/50">
-            Overview
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base font-medium opacity-60">Your journey, day by day</p>
-        </div>
+        <div />
 
         <div className="hidden sm:block">
           <CreateHabitDialog onHabitCreated={handleHabitCreated} />

@@ -23,7 +23,7 @@ interface SidebarProps {
 
 export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   return (
-    <aside className="hidden lg:flex flex-col w-56 min-h-screen bg-sidebar border-r border-sidebar-border p-4">
+    <aside className="hidden lg:flex flex-col w-56 min-h-screen bg-card/20 backdrop-blur-xl border-r border-white/5 p-4 relative z-10">
       <nav className="flex-1 space-y-1 mt-4">
         {navItems.map((item) => (
           <button
@@ -37,8 +37,8 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
             <item.icon className="w-5 h-5" />
             <span className="text-sm font-medium">{item.label}</span>
             {item.locked && (
-              <span className="ml-auto text-xs px-1.5 py-0.5 rounded bg-secondary/20 text-secondary">
-                Pro
+              <span className="ml-auto text-[8px] font-black px-1.5 py-0.5 rounded bg-secondary/20 text-secondary animate-pulse">
+                SOON
               </span>
             )}
           </button>
