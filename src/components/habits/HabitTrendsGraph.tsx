@@ -22,6 +22,7 @@ import { logService } from '@/services/logs';
 import { habitService } from '@/services/habits';
 import { format, subDays, addDays, subWeeks, addWeeks, subMonths, addMonths, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, isSameDay, isSameWeek, isSameMonth } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type Timeline = 'day' | 'week' | 'month';
 
@@ -37,6 +38,7 @@ interface HabitTrendsGraphProps {
 }
 
 export const HabitTrendsGraph = ({ currentMonth, refreshKey }: HabitTrendsGraphProps) => {
+    const isMobile = useIsMobile();
     const [timeline, setTimeline] = useState<Timeline>('day');
     const [data, setData] = useState<DataPoint[]>([]);
     const [loading, setLoading] = useState(true);
@@ -63,7 +65,7 @@ export const HabitTrendsGraph = ({ currentMonth, refreshKey }: HabitTrendsGraphP
         try {
             setLoading(true);
 
-            // Reference date for the "center" of the 10 points
+            // Reference date for the "center" of the points
             const realToday = new Date();
             const isFutureMonth = currentMonth > new Date(realToday.getFullYear(), realToday.getMonth(), 1);
 
@@ -79,7 +81,7 @@ export const HabitTrendsGraph = ({ currentMonth, refreshKey }: HabitTrendsGraphP
             if (isCurrentMonthView) {
                 referenceDate = realToday;
             } else {
-                // For past/future months, center on the 15th
+                // For past months, center on the 15th
                 referenceDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 15);
             }
 
@@ -88,9 +90,17 @@ export const HabitTrendsGraph = ({ currentMonth, refreshKey }: HabitTrendsGraphP
             let interval: Date[];
 
             if (timeline === 'day') {
-                startDate = subDays(referenceDate, 5);
-                endDate = addDays(referenceDate, 4);
-                interval = eachDayOfInterval({ start: startDate, end: endDate }).slice(0, 10);
+                if (!isMobile) {
+                    // Desktop: Show whole month
+                    startDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+                    endDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+                    interval = eachDayOfInterval({ start: startDate, end: endDate });
+                } else {
+                    // Mobile: Show 10 days centered on reference
+                    startDate = subDays(referenceDate, 5);
+                    endDate = addDays(referenceDate, 4);
+                    interval = eachDayOfInterval({ start: startDate, end: endDate }).slice(0, 10);
+                }
             } else if (timeline === 'week') {
                 startDate = subWeeks(referenceDate, 5);
                 endDate = addWeeks(referenceDate, 4);
@@ -212,9 +222,9 @@ export const HabitTrendsGraph = ({ currentMonth, refreshKey }: HabitTrendsGraphP
                                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 700, opacity: 0.3 }}
                                 dy={10}
                                 hide={false}
-                                interval={0}
-                                minTickGap={0}
-                                padding={{ left: 64, right: 20 }}
+                                interval={isMobile ? 0 : "preserveStartEnd"}
+                                minTickGap={isMobile ? 0 : 10}
+                                padding={{ left: isMobile ? 64 : 10, right: 10 }}
                             />
                             <YAxis
                                 hide
