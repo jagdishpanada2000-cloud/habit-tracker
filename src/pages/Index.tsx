@@ -107,7 +107,7 @@ const Index = () => {
       <div className="flex pt-20">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <main className="flex-1 px-3 py-4 lg:p-6 pb-24 lg:pb-6 max-w-7xl w-full overflow-x-hidden">
+        <main className="flex-1 px-3 py-4 lg:p-6 pb-24 lg:pb-6 overflow-x-hidden">
           {renderView()}
         </main>
       </div>

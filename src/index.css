@@ -116,7 +116,7 @@
   }
 
   .habit-check {
-    @apply w-8 h-8 rounded-lg border border-border/40 flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-primary/50 active:scale-90;
+    @apply w-8 h-8 rounded-full border border-border/40 flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-primary/50 active:scale-90;
     touch-action: manipulation;
   }
 

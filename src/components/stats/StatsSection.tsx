@@ -17,9 +17,11 @@ interface TopHabit {
 
 interface StatsSectionProps {
   currentMonth: Date;
+  refreshKey?: number;
+  showMonthlyProgress?: boolean;
 }
 
-export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
+export const StatsSection = ({ currentMonth, refreshKey, showMonthlyProgress = true }: StatsSectionProps) => {
   const [loading, setLoading] = useState(true);
   const [monthlyStats, setMonthlyStats] = useState({
     percentage: 0,
@@ -108,7 +110,13 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
             for (let d = 1; d <= daysToProcess; d++) {
               const checkDate = new Date(start.getFullYear(), start.getMonth(), d);
               const schedule = h.days_of_week || [0, 1, 2, 3, 4, 5, 6];
-              if (schedule.includes(checkDate.getDay())) {
+
+              // Only consider days from habit creation
+              const habitCreationDate = new Date(h.created_at);
+              habitCreationDate.setHours(0, 0, 0, 0);
+              const checkDateReset = new Date(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate());
+
+              if (schedule.includes(checkDate.getDay()) && checkDateReset >= habitCreationDate) {
                 totalPossible++;
 
                 const dStr = toLocal(checkDate);
@@ -152,7 +160,11 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
 
           habits.forEach(h => {
             const schedule = h.days_of_week || [0, 1, 2, 3, 4, 5, 6];
-            if (schedule.includes(dayOfWeek)) {
+            const habitCreationDate = new Date(h.created_at);
+            habitCreationDate.setHours(0, 0, 0, 0);
+            const dReset = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+            if (schedule.includes(dayOfWeek) && dReset >= habitCreationDate) {
               dayPossible++;
               if (logs.some(l => l.habit_id === h.id && l.completed_date === dStr)) {
                 dayLogged++;
@@ -268,7 +280,7 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
     };
 
     fetchData();
-  }, [currentMonth]);
+  }, [currentMonth, refreshKey]);
 
   if (loading) {
     return <div className="animate-pulse space-y-4">
@@ -280,29 +292,34 @@ export const StatsSection = ({ currentMonth }: StatsSectionProps) => {
   return (
     <div className="flex flex-col gap-10 animate-fade-in px-1" ref={sectionRef}>
       {/* Overview Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex flex-col">
-          <h3 className="mobile-section-title">Monthly Progress</h3>
-          <div className="glass-card p-8 flex flex-col items-center justify-center min-h-[240px]">
-            <CircularProgress
-              percentage={monthlyStats.percentage}
-              size={140}
-              strokeWidth={12}
-              label="completed"
-              sublabel="this month"
-              isVisible={isSectionVisible}
-            />
-            <div className={cn(
-              "flex items-center gap-2 mt-6 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-300",
-              monthlyStats.trend >= 0 ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
-            )}>
-              {monthlyStats.trend >= 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-              <span>
-                {Math.abs(monthlyStats.trend)}% {monthlyStats.trend >= 0 ? 'increase' : 'decrease'}
-              </span>
+      <div className={cn(
+        "grid grid-cols-1 gap-6",
+        showMonthlyProgress ? "md:grid-cols-2" : "md:grid-cols-1"
+      )}>
+        {showMonthlyProgress && (
+          <div className="flex flex-col">
+            <h3 className="mobile-section-title">Monthly Progress</h3>
+            <div className="glass-card p-8 flex flex-col items-center justify-center min-h-[240px]">
+              <CircularProgress
+                percentage={monthlyStats.percentage}
+                size={140}
+                strokeWidth={12}
+                label="completed"
+                sublabel="this month"
+                isVisible={isSectionVisible}
+              />
+              <div className={cn(
+                "flex items-center gap-2 mt-6 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-300",
+                monthlyStats.trend >= 0 ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+              )}>
+                {monthlyStats.trend >= 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
+                <span>
+                  {Math.abs(monthlyStats.trend)}% {monthlyStats.trend >= 0 ? 'increase' : 'decrease'}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="flex flex-col">
           <h3 className="mobile-section-title">Weekly Consistency</h3>

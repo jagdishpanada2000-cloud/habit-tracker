@@ -32,9 +32,10 @@ interface HabitWithLogs extends Habit {
 interface HabitGridProps {
   currentMonth: Date;
   userCreatedAt: Date | null;
+  onUpdate?: () => void;
 }
 
-export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
+export const HabitGrid = ({ currentMonth, userCreatedAt, onUpdate }: HabitGridProps) => {
   const [habits, setHabits] = useState<HabitWithLogs[]>([]);
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -103,18 +104,26 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
 
   // Handle scroll to today once loading is complete
   useEffect(() => {
-    if (!loading && isCurrentMonth && scrollRef.current) {
-      const scrollContainer = scrollRef.current;
-      const todayElement = scrollContainer.querySelector(`[data-day="${currentDay}"]`);
-      if (todayElement) {
-        const containerWidth = scrollContainer.offsetWidth;
-        const elementOffset = (todayElement as HTMLElement).offsetLeft;
-        const elementWidth = (todayElement as HTMLElement).offsetWidth;
+    if (!loading && isCurrentMonth && habits.length > 0 && scrollRef.current) {
+      const timer = setTimeout(() => {
+        const scrollContainer = scrollRef.current;
+        if (!scrollContainer) return;
 
-        scrollContainer.scrollLeft = elementOffset - (containerWidth / 2) + (elementWidth / 2);
-      }
+        const todayElement = scrollContainer.querySelector(`[data-day="${currentDay}"]`);
+        if (todayElement) {
+          const containerWidth = scrollContainer.offsetWidth;
+          const elementOffset = (todayElement as HTMLElement).offsetLeft;
+          const elementWidth = (todayElement as HTMLElement).offsetWidth;
+
+          scrollContainer.scrollTo({
+            left: elementOffset - (containerWidth / 2) + (elementWidth / 2),
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [loading, isCurrentMonth, currentDay]);
+  }, [loading, isCurrentMonth, currentDay, habits.length]);
 
   const toggleDay = async (habitId: string, day: number) => {
     // Safety check: prevent ticking future dates
@@ -144,12 +153,16 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
       return habit;
     }));
 
+    // Trigger parent update for real-time graphs
+    if (onUpdate) onUpdate();
+
     try {
       await logService.toggleCompletion(habitId, date);
     } catch (error) {
       // Revert if failed
       toast.error('Failed to update habit');
       loadData();
+      if (onUpdate) onUpdate();
     }
   };
 
@@ -159,6 +172,7 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
       await habitService.deleteHabit(deleteId);
       setHabits(prev => prev.filter(h => h.id !== deleteId));
       toast.success('Habit deleted');
+      if (onUpdate) onUpdate();
     } catch (error) {
       toast.error('Failed to delete habit');
     } finally {
@@ -188,7 +202,7 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
 
   return (
     <>
-      <div className="animate-fade-in max-w-full overflow-hidden">
+      <div className="animate-fade-in w-full">
         <div className="flex items-center justify-between mb-4 px-1">
           <h2 className="text-xl font-bold flex items-center gap-2">
             Daily Progress
@@ -337,11 +351,11 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                         const cellDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
 
                         let isBeforeCreation = false;
-                        if (userCreatedAt) {
-                          const creationStart = new Date(userCreatedAt);
-                          creationStart.setHours(0, 0, 0, 0);
+                        if (habit.created_at) {
+                          const habitCreationDate = new Date(habit.created_at);
+                          habitCreationDate.setHours(0, 0, 0, 0);
                           const cellReset = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
-                          isBeforeCreation = cellReset < creationStart;
+                          isBeforeCreation = cellReset < habitCreationDate;
                         }
 
                         // Normalize dates for comparison
@@ -354,6 +368,15 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                         const isEditable = !isFuture && !isBeforeCreation && inSchedule;
                         const isDisabled = !isEditable;
 
+                        // DO NOT render anything if it's before creation
+                        if (isBeforeCreation) {
+                          return (
+                            <td key={day} className="px-0.5 py-1.5 sm:py-3 border-b border-white/5 text-center">
+                              <div className="w-3 h-3 sm:w-[13px] sm:h-[13px] mx-auto" />
+                            </td>
+                          );
+                        }
+
                         return (
                           <td key={day} className={cn(
                             "px-0.5 py-1.5 sm:py-3 border-b border-white/5 text-center transition-opacity relative",
@@ -365,7 +388,7 @@ export const HabitGrid = ({ currentMonth, userCreatedAt }: HabitGridProps) => {
                                 onClick={() => !isDisabled && toggleDay(habit.id, day)}
                                 disabled={isDisabled}
                                 className={cn(
-                                  'habit-check w-3 h-3 sm:w-[13px] sm:h-[13px] rounded-sm flex items-center justify-center transition-all',
+                                  'habit-check w-3 h-3 sm:w-[13px] sm:h-[13px] rounded-full flex items-center justify-center transition-all',
                                   isEditable && 'active:scale-75 hover:border-primary/40',
                                   isCompleted ? 'animate-check-pop border-transparent scale-105' : 'bg-white/[0.03] border border-white/5',
                                   isToday && !isCompleted && 'border-primary/50 ring-1 ring-primary/10',

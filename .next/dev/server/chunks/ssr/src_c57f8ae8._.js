@@ -1759,7 +1759,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$habits$
 ;
 ;
 ;
-const HabitGrid = ({ currentMonth, userCreatedAt })=>{
+const HabitGrid = ({ currentMonth, userCreatedAt, onUpdate })=>{
     const [habits, setHabits] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const scrollRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
@@ -1859,12 +1859,15 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                 }
                 return habit;
             }));
+        // Trigger parent update for real-time graphs
+        if (onUpdate) onUpdate();
         try {
             await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$logs$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["logService"].toggleCompletion(habitId, date);
         } catch (error) {
             // Revert if failed
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].error('Failed to update habit');
             loadData();
+            if (onUpdate) onUpdate();
         }
     };
     const confirmDelete = async ()=>{
@@ -1873,6 +1876,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
             await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$habits$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["habitService"].deleteHabit(deleteId);
             setHabits((prev)=>prev.filter((h)=>h.id !== deleteId));
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].success('Habit deleted');
+            if (onUpdate) onUpdate();
         } catch (error) {
             __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].error('Failed to delete habit');
         } finally{
@@ -1907,7 +1911,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
             children: "Loading habits..."
         }, void 0, false, {
             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-            lineNumber: 186,
+            lineNumber: 192,
             columnNumber: 12
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -1924,7 +1928,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                 children: "Daily Progress"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                lineNumber: 193,
+                                lineNumber: 199,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1934,7 +1938,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                         className: "w-1.5 h-1.5 rounded-full bg-primary"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                        lineNumber: 197,
+                                        lineNumber: 203,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     currentMonth.toLocaleDateString('en-US', {
@@ -1944,13 +1948,13 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                lineNumber: 196,
+                                lineNumber: 202,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                        lineNumber: 192,
+                        lineNumber: 198,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1965,7 +1969,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                        lineNumber: 206,
+                                        lineNumber: 212,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1973,18 +1977,18 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                         children: habit.name
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                        lineNumber: 210,
+                                        lineNumber: 216,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, habit.id, true, {
                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                lineNumber: 205,
+                                lineNumber: 211,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)))
                     }, void 0, false, {
                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                        lineNumber: 203,
+                        lineNumber: 209,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2007,12 +2011,12 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                             children: "Routine"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                            lineNumber: 221,
+                                                            lineNumber: 227,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                        lineNumber: 220,
+                                                        lineNumber: 226,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2022,12 +2026,12 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                             children: "#"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                            lineNumber: 224,
+                                                            lineNumber: 230,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                        lineNumber: 223,
+                                                        lineNumber: 229,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     days.map((day)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2038,23 +2042,23 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                 children: day
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                lineNumber: 232,
+                                                                lineNumber: 238,
                                                                 columnNumber: 23
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         }, day, false, {
                                                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                            lineNumber: 227,
+                                                            lineNumber: 233,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                lineNumber: 219,
+                                                lineNumber: 225,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                            lineNumber: 218,
+                                            lineNumber: 224,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -2069,7 +2073,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                 className: "w-8 h-8 text-muted-foreground/30"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                lineNumber: 247,
+                                                                lineNumber: 253,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2077,23 +2081,23 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                 children: "This month hasn't started yet"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                lineNumber: 248,
+                                                                lineNumber: 254,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                        lineNumber: 246,
+                                                        lineNumber: 252,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                    lineNumber: 245,
+                                                    lineNumber: 251,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                lineNumber: 244,
+                                                lineNumber: 250,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)) : habits.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2102,12 +2106,12 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                     children: "No routines for this period"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                    lineNumber: 256,
+                                                    lineNumber: 262,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                lineNumber: 255,
+                                                lineNumber: 261,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)) : habits.map((habit, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                                     className: "group transition-colors duration-200 hover:bg-white/[0.03]",
@@ -2130,7 +2134,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                         }
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                        lineNumber: 271,
+                                                                                        lineNumber: 277,
                                                                                         columnNumber: 31
                                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2139,13 +2143,13 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                         children: habit.name
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                        lineNumber: 278,
+                                                                                        lineNumber: 284,
                                                                                         columnNumber: 31
                                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 270,
+                                                                                lineNumber: 276,
                                                                                 columnNumber: 29
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             habit.description && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2154,13 +2158,13 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                 children: habit.description
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 283,
+                                                                                lineNumber: 289,
                                                                                 columnNumber: 31
                                                                             }, ("TURBOPACK compile-time value", void 0))
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                        lineNumber: 269,
+                                                                        lineNumber: 275,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenu"], {
@@ -2174,17 +2178,17 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                         className: "w-4 h-4 text-muted-foreground/30"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                        lineNumber: 292,
+                                                                                        lineNumber: 298,
                                                                                         columnNumber: 33
                                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                    lineNumber: 291,
+                                                                                    lineNumber: 297,
                                                                                     columnNumber: 31
                                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 290,
+                                                                                lineNumber: 296,
                                                                                 columnNumber: 29
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenuContent"], {
@@ -2199,14 +2203,14 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                                 className: "w-4 h-4"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                                lineNumber: 297,
+                                                                                                lineNumber: 303,
                                                                                                 columnNumber: 33
                                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                                             "Edit/Rename"
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                        lineNumber: 296,
+                                                                                        lineNumber: 302,
                                                                                         columnNumber: 31
                                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -2217,37 +2221,37 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                                 className: "w-4 h-4"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                                lineNumber: 301,
+                                                                                                lineNumber: 307,
                                                                                                 columnNumber: 33
                                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                                             "Delete"
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                        lineNumber: 300,
+                                                                                        lineNumber: 306,
                                                                                         columnNumber: 31
                                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 295,
+                                                                                lineNumber: 301,
                                                                                 columnNumber: 29
                                                                             }, ("TURBOPACK compile-time value", void 0))
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                        lineNumber: 289,
+                                                                        lineNumber: 295,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                lineNumber: 268,
+                                                                lineNumber: 274,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                            lineNumber: 267,
+                                                            lineNumber: 273,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2264,12 +2268,12 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                             children: habit.name.charAt(0).toUpperCase()
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                            lineNumber: 313,
+                                                                            lineNumber: 319,
                                                                             columnNumber: 29
                                                                         }, ("TURBOPACK compile-time value", void 0))
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                        lineNumber: 312,
+                                                                        lineNumber: 318,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenuContent"], {
@@ -2281,7 +2285,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                 children: habit.name
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 321,
+                                                                                lineNumber: 327,
                                                                                 columnNumber: 29
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -2292,14 +2296,14 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                         className: "w-4 h-4"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                        lineNumber: 323,
+                                                                                        lineNumber: 329,
                                                                                         columnNumber: 31
                                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                                     "Edit"
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 322,
+                                                                                lineNumber: 328,
                                                                                 columnNumber: 29
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -2310,31 +2314,31 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                         className: "w-4 h-4"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                        lineNumber: 327,
+                                                                                        lineNumber: 333,
                                                                                         columnNumber: 31
                                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                                     "Delete"
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 326,
+                                                                                lineNumber: 332,
                                                                                 columnNumber: 29
                                                                             }, ("TURBOPACK compile-time value", void 0))
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                        lineNumber: 320,
+                                                                        lineNumber: 326,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                lineNumber: 311,
+                                                                lineNumber: 317,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                            lineNumber: 310,
+                                                            lineNumber: 316,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         days.map((day)=>{
@@ -2343,11 +2347,11 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                             const inSchedule = isDayInSchedule(habit, day);
                                                             const cellDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
                                                             let isBeforeCreation = false;
-                                                            if (userCreatedAt) {
-                                                                const creationStart = new Date(userCreatedAt);
-                                                                creationStart.setHours(0, 0, 0, 0);
+                                                            if (habit.created_at) {
+                                                                const habitCreationDate = new Date(habit.created_at);
+                                                                habitCreationDate.setHours(0, 0, 0, 0);
                                                                 const cellReset = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
-                                                                isBeforeCreation = cellReset < creationStart;
+                                                                isBeforeCreation = cellReset < habitCreationDate;
                                                             }
                                                             // Normalize dates for comparison
                                                             const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -2357,6 +2361,23 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                             const isFuture = startOfCell > startOfToday;
                                                             const isEditable = !isFuture && !isBeforeCreation && inSchedule;
                                                             const isDisabled = !isEditable;
+                                                            // DO NOT render anything if it's before creation
+                                                            if (isBeforeCreation) {
+                                                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                    className: "px-0.5 py-1.5 sm:py-3 border-b border-white/5 text-center",
+                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "w-3 h-3 sm:w-[13px] sm:h-[13px] mx-auto"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/src/components/habits/HabitGrid.tsx",
+                                                                        lineNumber: 367,
+                                                                        columnNumber: 31
+                                                                    }, ("TURBOPACK compile-time value", void 0))
+                                                                }, day, false, {
+                                                                    fileName: "[project]/src/components/habits/HabitGrid.tsx",
+                                                                    lineNumber: 366,
+                                                                    columnNumber: 29
+                                                                }, ("TURBOPACK compile-time value", void 0));
+                                                            }
                                                             return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                                 className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])("px-0.5 py-1.5 sm:py-3 border-b border-white/5 text-center transition-opacity relative", !inSchedule && !isCompleted && "opacity-10", isFuture && "opacity-20 cursor-not-allowed"),
                                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2364,7 +2385,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                                         onClick: ()=>!isDisabled && toggleDay(habit.id, day),
                                                                         disabled: isDisabled,
-                                                                        className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])('habit-check w-3 h-3 sm:w-[13px] sm:h-[13px] rounded-sm flex items-center justify-center transition-all', isEditable && 'active:scale-75 hover:border-primary/40', isCompleted ? 'animate-check-pop border-transparent scale-105' : 'bg-white/[0.03] border border-white/5', isToday && !isCompleted && 'border-primary/50 ring-1 ring-primary/10', isDisabled && 'cursor-not-allowed opacity-50'),
+                                                                        className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])('habit-check w-3 h-3 sm:w-[13px] sm:h-[13px] rounded-full flex items-center justify-center transition-all', isEditable && 'active:scale-75 hover:border-primary/40', isCompleted ? 'animate-check-pop border-transparent scale-105' : 'bg-white/[0.03] border border-white/5', isToday && !isCompleted && 'border-primary/50 ring-1 ring-primary/10', isDisabled && 'cursor-not-allowed opacity-50'),
                                                                         style: isCompleted ? {
                                                                             backgroundColor: habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))',
                                                                             boxShadow: `0 0 10px ${habit.color.startsWith('#') ? habit.color : 'hsl(var(--primary))'}44`
@@ -2375,7 +2396,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                 strokeWidth: 4
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 380,
+                                                                                lineNumber: 395,
                                                                                 columnNumber: 35
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             !isCompleted && isToday && inSchedule && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2385,72 +2406,72 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                                                                 }
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 383,
+                                                                                lineNumber: 398,
                                                                                 columnNumber: 35
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             !isCompleted && !inSchedule && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                 className: "w-0.5 h-0.5 rounded-full bg-white/10"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                                lineNumber: 386,
+                                                                                lineNumber: 401,
                                                                                 columnNumber: 35
                                                                             }, ("TURBOPACK compile-time value", void 0))
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                        lineNumber: 364,
+                                                                        lineNumber: 379,
                                                                         columnNumber: 31
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                    lineNumber: 363,
+                                                                    lineNumber: 378,
                                                                     columnNumber: 29
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             }, day, false, {
                                                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                                lineNumber: 358,
+                                                                lineNumber: 373,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0));
                                                         })
                                                     ]
                                                 }, habit.id, true, {
                                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                                    lineNumber: 262,
+                                                    lineNumber: 268,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                            lineNumber: 242,
+                                            lineNumber: 248,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                    lineNumber: 217,
+                                    lineNumber: 223,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                lineNumber: 216,
+                                lineNumber: 222,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-black/20 to-transparent pointer-events-none lg:hidden"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                lineNumber: 401,
+                                lineNumber: 416,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                        lineNumber: 215,
+                        lineNumber: 221,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                lineNumber: 191,
+                lineNumber: 197,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             editingHabit && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$habits$2f$EditHabitDialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["EditHabitDialog"], {
@@ -2460,7 +2481,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                 onHabitUpdated: loadData
             }, void 0, false, {
                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                lineNumber: 406,
+                lineNumber: 421,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDialog"], {
@@ -2475,20 +2496,20 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                     children: "Delete Routine?"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                    lineNumber: 417,
+                                    lineNumber: 432,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDialogDescription"], {
                                     children: "This will permanently remove this habit and all its history. This action cannot be undone."
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                    lineNumber: 418,
+                                    lineNumber: 433,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                            lineNumber: 416,
+                            lineNumber: 431,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDialogFooter"], {
@@ -2498,7 +2519,7 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                    lineNumber: 423,
+                                    lineNumber: 438,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDialogAction"], {
@@ -2507,24 +2528,24 @@ const HabitGrid = ({ currentMonth, userCreatedAt })=>{
                                     children: "Delete"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                                    lineNumber: 424,
+                                    lineNumber: 439,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                            lineNumber: 422,
+                            lineNumber: 437,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                    lineNumber: 415,
+                    lineNumber: 430,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/habits/HabitGrid.tsx",
-                lineNumber: 414,
+                lineNumber: 429,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
@@ -2770,7 +2791,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
 ;
 ;
 ;
-const HabitTrendsGraph = ({ currentMonth })=>{
+const HabitTrendsGraph = ({ currentMonth, refreshKey })=>{
     const [timeline, setTimeline] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('day');
     const [data, setData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
@@ -2863,7 +2884,8 @@ const HabitTrendsGraph = ({ currentMonth })=>{
         loadData();
     }, [
         timeline,
-        currentMonth
+        currentMonth,
+        refreshKey
     ]);
     const CustomTooltip = ({ active, payload, label })=>{
         if (active && payload && payload.length) {
@@ -2880,7 +2902,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                        lineNumber: 144,
+                        lineNumber: 145,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2890,7 +2912,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                 className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])("w-2 h-2 rounded-full shadow-[0_0_8px_hsl(var(--primary))]", isFuture ? "bg-muted-foreground/20" : "bg-primary")
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 148,
+                                lineNumber: 149,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2898,19 +2920,19 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                 children: isFuture ? 'Future' : `${payload[0].value} ${payload[0].value === 1 ? 'Habit' : 'Habits'}`
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 152,
+                                lineNumber: 153,
                                 columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                        lineNumber: 147,
+                        lineNumber: 148,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                lineNumber: 143,
+                lineNumber: 144,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0));
         }
@@ -2930,7 +2952,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                 children: "Activity Trends"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 166,
+                                lineNumber: 167,
                                 columnNumber: 21
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2938,13 +2960,13 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                 children: "Your consistency over time"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 167,
+                                lineNumber: 168,
                                 columnNumber: 21
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                        lineNumber: 165,
+                        lineNumber: 166,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2959,12 +2981,12 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                         placeholder: "Period"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                        lineNumber: 173,
+                                        lineNumber: 174,
                                         columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                    lineNumber: 172,
+                                    lineNumber: 173,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -2976,7 +2998,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                             children: "Day"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                            lineNumber: 176,
+                                            lineNumber: 177,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2985,7 +3007,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                             children: "Week"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                            lineNumber: 177,
+                                            lineNumber: 178,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2994,30 +3016,30 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                             children: "Month"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                            lineNumber: 178,
+                                            lineNumber: 179,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                    lineNumber: 175,
+                                    lineNumber: 176,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                            lineNumber: 171,
+                            lineNumber: 172,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                        lineNumber: 170,
+                        lineNumber: 171,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                lineNumber: 164,
+                lineNumber: 165,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3027,7 +3049,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                     children: "Gathering trends..."
                 }, void 0, false, {
                     fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                    lineNumber: 186,
+                    lineNumber: 187,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$ResponsiveContainer$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ResponsiveContainer"], {
                     width: "100%",
@@ -3055,7 +3077,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                             stopOpacity: 0.2
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                            lineNumber: 197,
+                                            lineNumber: 198,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("stop", {
@@ -3064,18 +3086,18 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                             stopOpacity: 0
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                            lineNumber: 198,
+                                            lineNumber: 199,
                                             columnNumber: 37
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                    lineNumber: 196,
+                                    lineNumber: 197,
                                     columnNumber: 33
                                 }, ("TURBOPACK compile-time value", void 0))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 195,
+                                lineNumber: 196,
                                 columnNumber: 29
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$CartesianGrid$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CartesianGrid"], {
@@ -3085,7 +3107,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                 strokeOpacity: 0.02
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 201,
+                                lineNumber: 202,
                                 columnNumber: 29
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -3108,7 +3130,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 207,
+                                lineNumber: 208,
                                 columnNumber: 29
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -3119,13 +3141,13 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                 ]
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 218,
+                                lineNumber: 219,
                                 columnNumber: 29
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Tooltip"], {
                                 content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(CustomTooltip, {}, void 0, false, {
                                     fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                    lineNumber: 222,
+                                    lineNumber: 223,
                                     columnNumber: 47
                                 }, void 0),
                                 cursor: {
@@ -3135,7 +3157,7 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 222,
+                                lineNumber: 223,
                                 columnNumber: 29
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Area$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Area"], {
@@ -3150,29 +3172,29 @@ const HabitTrendsGraph = ({ currentMonth })=>{
                                 connectNulls: true
                             }, `trends-area-${isVisible}-${currentMonth.getTime()}-${timeline}`, false, {
                                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                                lineNumber: 223,
+                                lineNumber: 224,
                                 columnNumber: 29
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                        lineNumber: 191,
+                        lineNumber: 192,
                         columnNumber: 25
                     }, ("TURBOPACK compile-time value", void 0))
                 }, void 0, false, {
                     fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                    lineNumber: 190,
+                    lineNumber: 191,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-                lineNumber: 184,
+                lineNumber: 185,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/habits/HabitTrendsGraph.tsx",
-        lineNumber: 163,
+        lineNumber: 164,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -3379,7 +3401,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
 ;
 ;
 ;
-const StatsSection = ({ currentMonth })=>{
+const StatsSection = ({ currentMonth, refreshKey })=>{
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const [monthlyStats, setMonthlyStats] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({
         percentage: 0,
@@ -3618,7 +3640,8 @@ const StatsSection = ({ currentMonth })=>{
         };
         fetchData();
     }, [
-        currentMonth
+        currentMonth,
+        refreshKey
     ]);
     if (loading) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3628,20 +3651,20 @@ const StatsSection = ({ currentMonth })=>{
                     className: "h-40 bg-accent/20 rounded-xl"
                 }, void 0, false, {
                     fileName: "[project]/src/components/stats/StatsSection.tsx",
-                    lineNumber: 275,
+                    lineNumber: 276,
                     columnNumber: 7
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "h-40 bg-accent/20 rounded-xl"
                 }, void 0, false, {
                     fileName: "[project]/src/components/stats/StatsSection.tsx",
-                    lineNumber: 276,
+                    lineNumber: 277,
                     columnNumber: 7
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/stats/StatsSection.tsx",
-            lineNumber: 274,
+            lineNumber: 275,
             columnNumber: 12
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -3660,7 +3683,7 @@ const StatsSection = ({ currentMonth })=>{
                                 children: "Monthly Progress"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                lineNumber: 285,
+                                lineNumber: 286,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3675,7 +3698,7 @@ const StatsSection = ({ currentMonth })=>{
                                         isVisible: isSectionVisible
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                        lineNumber: 287,
+                                        lineNumber: 288,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3685,13 +3708,13 @@ const StatsSection = ({ currentMonth })=>{
                                                 className: "w-3.5 h-3.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                lineNumber: 299,
+                                                lineNumber: 300,
                                                 columnNumber: 42
                                             }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$down$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingDown$3e$__["TrendingDown"], {
                                                 className: "w-3.5 h-3.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                lineNumber: 299,
+                                                lineNumber: 300,
                                                 columnNumber: 83
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3702,25 +3725,25 @@ const StatsSection = ({ currentMonth })=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                lineNumber: 300,
+                                                lineNumber: 301,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                        lineNumber: 295,
+                                        lineNumber: 296,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                lineNumber: 286,
+                                lineNumber: 287,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                        lineNumber: 284,
+                        lineNumber: 285,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3731,7 +3754,7 @@ const StatsSection = ({ currentMonth })=>{
                                 children: "Weekly Consistency"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                lineNumber: 308,
+                                lineNumber: 309,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3741,24 +3764,24 @@ const StatsSection = ({ currentMonth })=>{
                                     isVisible: isSectionVisible
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                    lineNumber: 310,
+                                    lineNumber: 311,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                lineNumber: 309,
+                                lineNumber: 310,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                        lineNumber: 307,
+                        lineNumber: 308,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                lineNumber: 283,
+                lineNumber: 284,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3772,20 +3795,20 @@ const StatsSection = ({ currentMonth })=>{
                                 children: "Top Performers"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                lineNumber: 318,
+                                lineNumber: 319,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$target$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Target$3e$__["Target"], {
                                 className: "w-4 h-4 text-muted-foreground/30 mb-4 mr-1"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                lineNumber: 319,
+                                lineNumber: 320,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                        lineNumber: 317,
+                        lineNumber: 318,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3795,7 +3818,7 @@ const StatsSection = ({ currentMonth })=>{
                             children: "Keep tracking to see your top performing habits here."
                         }, void 0, false, {
                             fileName: "[project]/src/components/stats/StatsSection.tsx",
-                            lineNumber: 324,
+                            lineNumber: 325,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)) : topHabits.map((habit, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "glass-card p-5 flex items-center justify-between group transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]",
@@ -3811,7 +3834,7 @@ const StatsSection = ({ currentMonth })=>{
                                                 children: idx + 1
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                lineNumber: 335,
+                                                lineNumber: 336,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3821,7 +3844,7 @@ const StatsSection = ({ currentMonth })=>{
                                                         children: habit.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                        lineNumber: 339,
+                                                        lineNumber: 340,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3833,7 +3856,7 @@ const StatsSection = ({ currentMonth })=>{
                                                                     className: "w-3 h-3"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                                    lineNumber: 342,
+                                                                    lineNumber: 343,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3843,30 +3866,30 @@ const StatsSection = ({ currentMonth })=>{
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                                    lineNumber: 343,
+                                                                    lineNumber: 344,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                            lineNumber: 341,
+                                                            lineNumber: 342,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                        lineNumber: 340,
+                                                        lineNumber: 341,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                lineNumber: 338,
+                                                lineNumber: 339,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                        lineNumber: 334,
+                                        lineNumber: 335,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3881,13 +3904,13 @@ const StatsSection = ({ currentMonth })=>{
                                                         children: "%"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                        lineNumber: 355,
+                                                        lineNumber: 356,
                                                         columnNumber: 39
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                lineNumber: 350,
+                                                lineNumber: 351,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3895,36 +3918,36 @@ const StatsSection = ({ currentMonth })=>{
                                                 children: "CONSISTENCY"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                                lineNumber: 357,
+                                                lineNumber: 358,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                        lineNumber: 349,
+                                        lineNumber: 350,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, habit.id, true, {
                                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                                lineNumber: 329,
+                                lineNumber: 330,
                                 columnNumber: 15
                             }, ("TURBOPACK compile-time value", void 0)))
                     }, void 0, false, {
                         fileName: "[project]/src/components/stats/StatsSection.tsx",
-                        lineNumber: 322,
+                        lineNumber: 323,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/stats/StatsSection.tsx",
-                lineNumber: 316,
+                lineNumber: 317,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/stats/StatsSection.tsx",
-        lineNumber: 281,
+        lineNumber: 282,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };

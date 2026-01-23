@@ -33,9 +33,10 @@ interface DataPoint {
 
 interface HabitTrendsGraphProps {
     currentMonth: Date;
+    refreshKey?: number;
 }
 
-export const HabitTrendsGraph = ({ currentMonth }: HabitTrendsGraphProps) => {
+export const HabitTrendsGraph = ({ currentMonth, refreshKey }: HabitTrendsGraphProps) => {
     const [timeline, setTimeline] = useState<Timeline>('day');
     const [data, setData] = useState<DataPoint[]>([]);
     const [loading, setLoading] = useState(true);
@@ -134,7 +135,7 @@ export const HabitTrendsGraph = ({ currentMonth }: HabitTrendsGraphProps) => {
 
     useEffect(() => {
         loadData();
-    }, [timeline, currentMonth]);
+    }, [timeline, currentMonth, refreshKey]);
 
     const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
         if (active && payload && payload.length) {
